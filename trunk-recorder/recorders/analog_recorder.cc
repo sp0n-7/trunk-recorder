@@ -58,37 +58,26 @@ analog_recorder::analog_recorder(Source *src)
   timestamp = time(NULL);
   starttime = time(NULL);
 
+  
+
+  system_channel_rate = 96000;
+  int audio_file_rate = 8000;
   float offset = 0;
-
-  //int samp_per_sym        = 10;
-  system_channel_rate     = 96000;//4800 * samp_per_sym;
-/*  int decim               = floor(samp_rate / 384000);
-
-  double pre_channel_rate = samp_rate / decim;*/
-
-  int initial_decim      = floor(samp_rate / 480000);
-  double initial_rate = double(samp_rate) / double(initial_decim);
-  int decim = floor(initial_rate / system_channel_rate);
-  double resampled_rate = double(initial_rate) / double(decim);
-
-  inital_lpf_taps  = gr::filter::firdes::low_pass_2(1.0, samp_rate, 96000, 30000, 100, gr::filter::firdes::WIN_HANN);
-//  channel_lpf_taps =  gr::filter::firdes::low_pass_2(1.0, pre_channel_rate, 5000, 2000, 60);
-  channel_lpf_taps =  gr::filter::firdes::low_pass_2(1.0, initial_rate, 4000, 1000, 100);
-
-
+  inital_lpf_taps  = gr::filter::firdes::low_pass_2(1.0, samp_rate, system_channel_rate, system_channel_rate / 3, 100, gr::filter::firdes::WIN_HANN);
   std::vector<gr_complex> dest(inital_lpf_taps.begin(), inital_lpf_taps.end());
-
+  int initial_decim     = floor(samp_rate / system_channel_rate);
   prefilter = make_freq_xlating_fft_filter(initial_decim, dest, offset, samp_rate);
 
+  double initial_rate   = double(samp_rate) / double(initial_decim);
+  int decim             = floor(initial_rate / system_channel_rate);
+  channel_lpf_taps =  gr::filter::firdes::low_pass_2(1.0, system_channel_rate, audio_file_rate, audio_file_rate / 3, 100);
   channel_lpf =  gr::filter::fft_filter_ccf::make(decim, channel_lpf_taps);
-
+  
+  double resampled_rate = double(initial_rate) / double(decim);
   double arb_rate  = (double(system_channel_rate) / resampled_rate);
   double arb_size  = 32;
   double arb_atten = 100;
-
-
   // Create a filter that covers the full bandwidth of the output signal
-
   // If rate >= 1, we need to prevent images in the output,
   // so we have to filter it to less than half the channel
   // width of 0.5.  If rate < 1, we need to filter to less
@@ -173,7 +162,7 @@ analog_recorder::analog_recorder(Source *src)
     connect(self(),        0, valve,         0);
     connect(valve,         0, prefilter,     0);
     connect(prefilter,     0, channel_lpf,   0);
-    connect(channel_lpf,   0, arb_resampler, 0);
+    connect(channel_lpf,   0, arb_resampler, 0); 
     connect(arb_resampler, 0, squelch,       0);
     connect(squelch,       0, demod,         0);
     connect(demod,         0, deemph,        0);
