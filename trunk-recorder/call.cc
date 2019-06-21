@@ -17,7 +17,7 @@ void Call::create_filename()
   boost::filesystem::create_directories(path_stream.str());
 
   int nchars;
-  chars = snprintf(filename, 255, "%s/%ld-%ld_%.0f_%s.wav", path_stream.str().c_str(), talkgroup, start_time, curr_freq, this->trid);
+  nchars = snprintf(filename, 255, "%s/%ld-%ld_%.0f_%s.wav", path_stream.str().c_str(), talkgroup, start_time, curr_freq, this->trid);
 
   if (nchars >= 255)
   {

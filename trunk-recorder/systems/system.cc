@@ -45,7 +45,7 @@ void System::set_trunked_site_id(std::string trsid)
   this->trunked_system_id = trsid;
 }
 
-std::string get_trunked_site_id()
+std::string System::get_trunked_site_id()
 {
   return this->trunked_system_id;
 }
@@ -66,6 +66,7 @@ System::System(int sys_num)
   d_hideUnknown = false;
   retune_attempts = 0;
   message_count = 0;
+  trunked_system_id = "";
 }
 
 void System::set_xor_mask(unsigned long sys_id, unsigned long wacn, unsigned long nac)

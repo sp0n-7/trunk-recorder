@@ -64,7 +64,6 @@ public:
         double bandplan_spacing;
         int bandplan_offset;
         double min_call_duration;
-        std::string trunked_system_id;
         unsigned xor_mask_len;
         const char *xor_mask;
         std::vector<double> control_channels;
@@ -135,7 +134,7 @@ public:
         int get_bandplan_offset();
         void set_talkgroup_display_format(TalkgroupDisplayFormat format);
         void set_trunked_site_id(std::string);
-        void set_talkgroup_display_format(TalkgroupDisplayFormat format);
+        std::string get_trunked_site_id();
         TalkgroupDisplayFormat get_talkgroup_display_format();
 
         bool get_delaycreateoutput();
@@ -155,5 +154,6 @@ private:
         bool d_delaycreateoutput;
         bool d_hideEncrypted;
         bool d_hideUnknown;
+        std::string trunked_system_id;
 };
 #endif
