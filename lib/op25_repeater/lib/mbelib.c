@@ -14,7 +14,7 @@
  * OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include "mbelib.h"
 #include "mbelib_const.h"
@@ -98,6 +98,14 @@ mbe_initToneParms (mbe_tone * tone_mp)
   tone_mp->ID = 0;
   tone_mp->AD = 0;
   tone_mp->n = 0;
+}
+
+void
+mbe_initErrParms (mbe_errs * errs_mp)
+{
+  errs_mp->E0 = 0;
+  errs_mp->E1 = 0;
+  errs_mp->ER = 0;
 }
 
 void
@@ -207,7 +215,6 @@ mbe_synthesizeSpeechf (float *aout_buf, mbe_parms * cur_mp, mbe_parms * prev_mp,
   int i, l, n, maxl;
   float *Ss, loguvquality;
   float C1, C2, C3, C4;
-  float deltaphil, deltawl, thetaln, aln;
   int numUv;
   float cw0, pw0, cw0l, pw0l;
   float uvsine, uvrand, uvthreshold, uvthresholdf;

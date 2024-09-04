@@ -1,4 +1,4 @@
-//smartnet_decode.h
+// smartnet_decode.h
 /* -*- c++ -*- */
 /*
  * Copyright 2004 Free Software Foundation, Inc.
@@ -39,8 +39,12 @@ class smartnet_decode;
  *
  * As a convention, the _sptr suffix indicates a boost::shared_ptr
  */
-typedef boost::shared_ptr<smartnet_decode> smartnet_decode_sptr;
 
+#if GNURADIO_VERSION < 0x030900
+typedef boost::shared_ptr<smartnet_decode> smartnet_decode_sptr;
+#else
+typedef std::shared_ptr<smartnet_decode> smartnet_decode_sptr;
+#endif
 /*!
  * \brief Return a shared_ptr to a new instance of smartnet_decode.
  *
@@ -79,7 +83,7 @@ public:
            gr_vector_void_star &output_items);
 
   /*	void forecast (int noutput_items,
-	               gr_vector_int &ninput_items_required);*/
+                       gr_vector_int &ninput_items_required);*/
 };
 
 #endif /* smartnet_decode_H */

@@ -4,7 +4,9 @@ on:
   pull_request:
     branches: master
   push:
-    branches: master
+    branches: 
+      - master
+      - rc/**
     tags:
       - v*
   release:
@@ -12,6 +14,9 @@ on:
 jobs:
   buildx:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       -
         name: Checkout
@@ -20,23 +25,38 @@ jobs:
         name: Prepare
         id: prepare
         run: |
-          DOCKER_IMAGE=robotastic/trunk-recorder
+          DOCKER_IMAGE=${GITHUB_REPOSITORY}
+          GHCR_IMAGE=ghcr.io/${GITHUB_REPOSITORY}
           DOCKER_PLATFORMS=linux/amd64,linux/arm64,linux/arm/v7
           VERSION=edge
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
           fi
+          echo GITHUB_REF_NAME=${GITHUB_REF_NAME}
+          echo GITHUB_REF_NAME_SLUG=${GITHUB_REF_NAME_SLUG}
+          if [[ $GITHUB_REF_NAME == rc/* ]]; then
+            VERSION=RC${GITHUB_REF_NAME#rc/v}
+          fi
           if [ "${{ github.event_name }}" = "schedule" ]; then
             VERSION=nightly
           fi
 
           TAGS="--tag ${DOCKER_IMAGE}:${VERSION}"
+          TAGS="$TAGS --tag ${GHCR_IMAGE}:${VERSION}"
           if [[ $VERSION =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
             TAGS="$TAGS --tag ${DOCKER_IMAGE}:latest"
+            TAGS="$TAGS --tag ${GHCR_IMAGE}:latest"
           fi
-
+          if [[ $VERSION =~ ^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            TAGS="$TAGS --tag ${DOCKER_IMAGE}:latest"
+            TAGS="$TAGS --tag ${GHCR_IMAGE}:latest"
+          fi
+          echo docker_image::${DOCKER_IMAGE}
+          echo ghcr_image::${GHCR_IMAGE}
+          echo version::${VERSION}
           echo ::set-output name=docker_image::${DOCKER_IMAGE}
+          echo ::set-output name=ghcr_image::${GHCR_IMAGE}
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=buildx_args::--platform ${DOCKER_PLATFORMS} \
             --build-arg VERSION=${VERSION} \
@@ -68,13 +88,21 @@ jobs:
             --cache-to "type=local,dest=/tmp/.buildx-cache" \
             --output "type=image,push=false" ${{ steps.prepare.outputs.buildx_args }}
       -
-        name: Docker Login
+        name: Docker Hub Login
         if: success() && github.event_name != 'pull_request'
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+      -
+        name: GHCR Login
+        if: success() && github.event_name != 'pull_request'
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin ghcr.io
       -
         name: Docker Buildx (push)
         if: success() && github.event_name != 'pull_request'
@@ -87,6 +115,7 @@ jobs:
         if: always() && github.event_name != 'pull_request'
         run: |
           docker run --rm mplatform/mquery ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}
+          docker run --rm mplatform/mquery ${{ steps.prepare.outputs.ghcr_image }}:${{ steps.prepare.outputs.version }}
       -
         name: Clear
         if: always() && github.event_name != 'pull_request'
