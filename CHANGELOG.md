@@ -1,5 +1,129 @@
 Trunk Recorder ChangeLog
 ========================
+### Version 4.6.0
+* Cleaned up Rdio Scanner talkgroup display logs. by @tadscottsmith in https://github.com/robotastic/trunk-recorder/pull/750
+* adjust Source sample rate to match SDR sample rate by @aaknitt in https://github.com/robotastic/trunk-recorder/pull/753
+* Create log file earlier by @aaknitt in https://github.com/robotastic/trunk-recorder/pull/754
+* Enable/Disable config sections by @taclane in https://github.com/robotastic/trunk-recorder/pull/756
+* broadcastify: add option to disable ssl certificate verification by @galenguyer in https://github.com/robotastic/trunk-recorder/pull/757
+* Update signaling decoders to print logs via boost info log instead of plain stdout by @EricTendian in https://github.com/robotastic/trunk-recorder/pull/759
+* help screen fix by @taclane in https://github.com/robotastic/trunk-recorder/pull/767
+* Adding support for regex in unitTagsFile by @EricTendian in https://github.com/robotastic/trunk-recorder/pull/764
+* Enable Multi-site mode features. by @tadscottsmith in https://github.com/robotastic/trunk-recorder/pull/758
+* Use more compatible cmake command by @dotsam in https://github.com/robotastic/trunk-recorder/pull/768
+* Multi-site bug fixes and improvements. by @tadscottsmith in https://github.com/robotastic/trunk-recorder/pull/770
+* Clean up a few debug warning messages. by @tadscottsmith in https://github.com/robotastic/trunk-recorder/pull/771
+* Update Homebrew instructions by @taclane in https://github.com/robotastic/trunk-recorder/pull/776
+* use iterators for std::fill, fix out of bounds access by @Jannik2099 in https://github.com/robotastic/trunk-recorder/pull/782
+* Console log cleanup by @taclane in https://github.com/robotastic/trunk-recorder/pull/784
+* OpenMHz Uploader update by @robotastic in https://github.com/robotastic/trunk-recorder/pull/794
+* Spelling fixes and additional call stat reporting by @taclane in https://github.com/robotastic/trunk-recorder/pull/798
+* Ignore missing files by @devicenull in https://github.com/robotastic/trunk-recorder/pull/796
+* UnitID alpha improvements and decode error display by @taclane in https://github.com/robotastic/trunk-recorder/pull/785
+* Fix freq offset variable declarations in trunking messages by @taclane in https://github.com/robotastic/trunk-recorder/pull/802
+* Update call_concluder.h by @taclane in https://github.com/robotastic/trunk-recorder/pull/801
+* updates to the latest version of OP25 by @robotastic in https://github.com/robotastic/trunk-recorder/pull/803
+* actual crash fix this time by @gisforgirard in https://github.com/robotastic/trunk-recorder/pull/800
+* Remove sys num by @robotastic in https://github.com/robotastic/trunk-recorder/pull/805
+* Fix p25 parse by @robotastic in https://github.com/robotastic/trunk-recorder/pull/806
+* update boost log line by @taclane in https://github.com/robotastic/trunk-recorder/pull/804
+* Fixes retuning the CC when it has to move to a new source by @robotastic in https://github.com/robotastic/trunk-recorder/pull/810
+* Feature/message hook by @robotastic in https://github.com/robotastic/trunk-recorder/pull/814
+* update/edit README.md and docs/CONFIGURE.md, 3 minor fixes by @rosecitytransit in https://github.com/robotastic/trunk-recorder/pull/816
+* Release/new call mgmt by @robotastic in https://github.com/robotastic/trunk-recorder/pull/817
+* P25 Trunking Message Improvements by @robotastic in https://github.com/robotastic/trunk-recorder/pull/820
+* add option to disable output to console, docs/CONFIGURE.md formatting by @rosecitytransit in https://github.com/robotastic/trunk-recorder/pull/819
+* Feature/temp dir by @robotastic in https://github.com/robotastic/trunk-recorder/pull/823
+* correct callLog option in docs/CONFIGURE.md to true to match code by @rosecitytransit in https://github.com/robotastic/trunk-recorder/pull/824
+* Per-day call log plugin, log P25 priority/mode/duplex by @rosecitytransit in https://github.com/robotastic/trunk-recorder/pull/482
+
+### Version 4.5.0
+* Set d_call to null to prevent potential use after free by @galenguyer in https://github.com/robotastic/trunk-recorder/pull/739
+* Documenting maxDuration config param by @EricTendian in https://github.com/robotastic/trunk-recorder/pull/741
+* Conventional recorder info for MQTT and status-server plugins by @taclane in https://github.com/robotastic/trunk-recorder/pull/744
+* Cleanup dropped samples logging. by @tadscottsmith in https://github.com/robotastic/trunk-recorder/pull/745
+* Multiple CMake fixes and version updates to resolve compiler warnings by @galenguyer in https://github.com/robotastic/trunk-recorder/pull/738
+* Log cleanup by @tadscottsmith in https://github.com/robotastic/trunk-recorder/pull/749
+
+### Version 4.4.2
+* Fix logging when all transmissions are removed. by @tadscottsmith in #735
+* Fixes issue mentioned in #691 by @Dygear in #733
+* Improve CSV parsing to allow quoted and escaped fields by @EricTendian in #734
+* Updated Broadcastify Uploader to make it more robust by @robotastic in #736
+
+### Version 4.4.1
+* Fix for #606 by @JoeGilkey in #721
+* Improved Talkgroup Priority Logging by @tadscottsmith in #700
+* Build gr-osmosdr in Docker with multiple Airspy source patch by @EricTendian in #727
+
+### Version 4.4.0
+* Add support for using a .csv file for adding for conventional channels
+* Removed alphaTags support from config.json, use the channel.csv instead
+* M/A-COM patch following enhancement by @aaknitt in https://github.com/robotastic/trunk-recorder/pull/643
+* Conventional Channel Information by @robotastic in https://github.com/robotastic/trunk-recorder/pull/652
+* Note on column headings for priority detection by @hayden-t in https://github.com/robotastic/trunk-recorder/pull/650
+* Add TCP support to simplestream plugin by @aaknitt in https://github.com/robotastic/trunk-recorder/pull/649
+* Add per-system configuration option for minimum transmission length. by @tadscottsmith in https://github.com/robotastic/trunk-recorder/pull/654
+* GNU Radio typo by @777arc in https://github.com/robotastic/trunk-recorder/pull/655
+* Fix op25 errors by @tadscottsmith in https://github.com/robotastic/trunk-recorder/pull/659
+* Report Errors/Spikes to Rdio Scanner by @taclane in https://github.com/robotastic/trunk-recorder/pull/660
+* Set alpha tag for conventional talkgroup and restore startup console message by @taclane in https://github.com/robotastic/trunk-recorder/pull/662
+* Log data channel grants, unit answer requests, Location Reg Responses by @rosecitytransit in https://github.com/robotastic/trunk-recorder/pull/661
+* minor fix to unit answer reqest logging by @rosecitytransit in https://github.com/robotastic/trunk-recorder/pull/663
+* a new approach for tracking call timeouts  by @robotastic in https://github.com/robotastic/trunk-recorder/pull/664
+* Simplestream fixes by @aaknitt in https://github.com/robotastic/trunk-recorder/pull/671
+* Fix missing audio on rdio-scanner web and mobile devices by @kb2ear in https://github.com/robotastic/trunk-recorder/pull/668
+* Update macOS Build Instructions by @dechilders in https://github.com/robotastic/trunk-recorder/pull/680
+* Add config option to not record Unit-to-Unit voice calls by @tadscottsmith in https://github.com/robotastic/trunk-recorder/pull/667
+* Public Plugin API by @robotastic in https://github.com/robotastic/trunk-recorder/pull/681
+* Remove extra characters by @dechilders in https://github.com/robotastic/trunk-recorder/pull/684
+* Raspberry Pi Bullseye & Ubuntu 22.04 Updates. by @Dygear in https://github.com/robotastic/trunk-recorder/pull/685
+* added --version switch to pull both github and CMake version information as well as log the Version info into the log file by @rabarar in https://github.com/robotastic/trunk-recorder/pull/688
+* Remove nested BOOST_LOG_TRIVIAL to fix erroneous log level display by @taclane in https://github.com/robotastic/trunk-recorder/pull/692
+* Add initial support for gnuradio 3.10. by @geezer85 in https://github.com/robotastic/trunk-recorder/pull/682
+* Added debian notes to PI install. by @Dygear in https://github.com/robotastic/trunk-recorder/pull/695
+* Update INSTALL-LINUX.md by @joe00dev in https://github.com/robotastic/trunk-recorder/pull/696
+* Include boost/filesystem header by @geezer85 in https://github.com/robotastic/trunk-recorder/pull/698
+* P25p2 uid by @robotastic in https://github.com/robotastic/trunk-recorder/pull/708
+* Op25 june 22 by @robotastic in https://github.com/robotastic/trunk-recorder/pull/709
+* mark one function visible to allow shared build by @ZeroChaos- in https://github.com/robotastic/trunk-recorder/pull/720
+* modified version switch to build without .git repo directory and adde… by @rabarar in https://github.com/robotastic/trunk-recorder/pull/715
+
+### Version 4.3.0
+* Add support for DMR / MotoTRBO
+
+
+### Version 4.2.0
+* Added support for tracking System Patches
+* Simple Streaming Plugin
+* Switch from Floats to int16 for decoder->wav
+* Resets the garnder costas clock in convetional mode after each transmission
+
+### Version 4.1.1
+* Got the Wrong docker package by @MaxwellDPS in #555
+* Plugin rdioscanner by @chuot in #557
+* Plugin Audio Streaming CPU/Memory Usage Reduction by @JoeGilkey in #559
+* Significant improvements to audioplayer by @devicenull in #549
+* Read support for reading in direct CSV exports from Radio Reference by @devicenull in #547
+* Fix compile errors on Fedora 35 by @chuot in #560
+
+### Version 4.1.0
+* pulls in the latest version of OP25
+
+### Version 4.0.3
+* Fixed support for P25 Conventional recorders. 
+
+### Version 4.0
+* The executable generated has changed from `recorder` to `trunk-recorder` to help prevent differentiate it from other applications that maybe instaslled.
+* A new method is used to detect the end of call. Instead of waiting fora timeout after the last trunking message is recieved, the voice channel is monitored for messages announcing the end of a transmission. Each transmission is stored in a separate file and then merged together after a talkgroup stop using a frequency.
+* The format for audio filenames has changed slightly. It is now: [ Talkgroup ID ]\_[ Unix Timestamp ]-[ Frequency ]-call\_[ Call Counter ].wav
+
+
+### Version 3.3
+* Changes the format of the config.json file. Modulation type, Squelch and audio levels are now set in each System instead of under a Source. See sample config files in the /example folder. 
+* Config files are also now versioned, to help catch misconfigurations. After you have updated your config file, add "ver": 2, to the top. The processing of SmartNet talkgroup numbers as also been fixed. 
+* The decimal talkgroup numbers will now match what is in Radio Reference. Please update your talkgroup.csv, if needed.
+
 ### Version 3.2
 * Added support for GnuRadio 3.8
 

@@ -82,8 +82,6 @@ static inline int load_i(const uint8_t val[], int len) {
 
 // unpacks bytes into bits, len is length of result
 static inline void unpack_bytes(uint8_t result[], const char src[], int len) {
-	static const int nbytes = len / 8;
-	int outp = 0;
 	for (int i=0; i < len; i++) {
 		result[i] = (src[i>>3] >> (7-(i%8))) & 1;
 	}
@@ -116,7 +114,7 @@ static inline void trellis_encode(uint8_t result[], const uint8_t source[], int 
 static inline void trellis_interleave(uint8_t result[], const uint8_t input[], int x, int y)
 {
 	static uint8_t tmp_result[200];
-	assert (x*y <= sizeof(tmp_result));
+	assert (x*y <= (int)sizeof(tmp_result));
 
 	trellis_encode(tmp_result, input, x*y);
 
@@ -254,8 +252,8 @@ static const int MAX_OUT = 1;
               gr::io_signature::make (MIN_IN, MAX_IN, sizeof(short)),
               gr::io_signature::make (MIN_OUT, MAX_OUT, sizeof(char))),
               d_verbose_flag(verbose_flag),
-              d_config_file(config_file),
               d_fullrate_mode(fullrate_mode),
+              d_config_file(config_file),
               d_ft(0),
               d_mr(0),
               d_sq(0),
@@ -380,10 +378,9 @@ void
 ysf_tx_sb_impl::forecast(int nof_output_items, gr_vector_int &nof_input_items_reqd)
 {
    // each 480-dibit output frame contains five voice code words=800 samples
-   const size_t nof_inputs = nof_input_items_reqd.size();
    const int nof_vcw = nof_output_items / 480.0;
    const int nof_samples_reqd = nof_vcw * 5 * 160;
-   std::fill(&nof_input_items_reqd[0], &nof_input_items_reqd[nof_inputs], nof_samples_reqd);
+   std::fill(nof_input_items_reqd.begin(), nof_input_items_reqd.end(), nof_samples_reqd);
 }
 
 int 

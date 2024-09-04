@@ -5,10 +5,14 @@
 #include <boost/format.hpp>
 #include <string>
 
-extern boost::format FormatFreq(double f);
+extern boost::format format_freq(double f);
 extern boost::format FormatSamplingRate(float f);
-extern std::string FormatState(State state);
-extern int frequencyFormat;
+extern boost::format format_time(float f);
+extern std::string format_state(State state);
+extern std::string format_state(State state, MonitoringState monitoringState);
+std::string get_frequency_format();
+extern std::string log_header(std::string short_name,long call_num, std::string talkgroup_display, double freq);
+extern int frequency_format;
 extern bool statusAsString;
 
 #endif // FORMATTER_H
