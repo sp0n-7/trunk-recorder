@@ -71,8 +71,8 @@ public:
   virtual void set_transmission_archive(bool) = 0;
   virtual bool get_record_unknown() = 0;
   virtual void set_record_unknown(bool) = 0;
-  virtual bool get_record_encrypted(bool) = 0;
-  virtual bool set_record_encrypted() = 0;
+  virtual bool get_record_encrypted() = 0;
+  virtual bool set_record_encrypted(bool) = 0;
   virtual bool get_call_log() = 0;
   virtual void set_call_log(bool) = 0;
   virtual bool get_conversation_mode() = 0;
