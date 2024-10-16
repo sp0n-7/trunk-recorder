@@ -359,6 +359,8 @@ bool load_config(string config_file, Config &config, gr::top_block_sptr &tb, std
         BOOST_LOG_TRIVIAL(info) << "Unit Tags File: " << system->get_unit_tags_file();
         system->set_record_unknown(element.value("recordUnknown", true));
         BOOST_LOG_TRIVIAL(info) << "Record Unknown Talkgroups: " << system->get_record_unknown();
+        system->set_record_encrypted(element.value("recordEncrypted", false));
+        BOOST_LOG_TRIVIAL(info) << "Record Encrypted Talkgroups: " << system->get_record_encrypted();
         system->set_mdc_enabled(element.value("decodeMDC", false));
         BOOST_LOG_TRIVIAL(info) << "Decode MDC: " << system->get_mdc_enabled();
         system->set_fsync_enabled(element.value("decodeFSync", false));

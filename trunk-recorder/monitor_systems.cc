@@ -50,7 +50,7 @@ bool start_recorder(Call *call, TrunkMessage message, Config &config, System *sy
     call->set_talkgroup_tag("-");
   }
 
-  if (call->get_encrypted() == true || (talkgroup && (talkgroup->mode.compare("E") == 0 || talkgroup->mode.compare("TE") == 0 || talkgroup->mode.compare("DE") == 0))) {
+  if (!sys->get_record_encrypted() && (call->get_encrypted() == true || (talkgroup && (talkgroup->mode.compare("E") == 0 || talkgroup->mode.compare("TE") == 0 || talkgroup->mode.compare("DE") == 0)))) {
     call->set_state(MONITORING);
     call->set_monitoring_state(ENCRYPTED);
     if (sys->get_hideEncrypted() == false) {

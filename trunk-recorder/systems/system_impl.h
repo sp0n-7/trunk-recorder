@@ -102,6 +102,7 @@ public:
   bool transmission_archive;
   bool audio_archive;
   bool record_unknown;
+  bool record_encrypted;
   bool call_log;
 
   smartnet_trunking_sptr smartnet_trunking;
@@ -133,6 +134,8 @@ public:
   void set_transmission_archive(bool);
   bool get_record_unknown();
   void set_record_unknown(bool);
+  bool get_record_encrypted();
+  void set_record_encrypted(bool);
   bool get_call_log();
   void set_call_log(bool);
   bool get_conversation_mode();
