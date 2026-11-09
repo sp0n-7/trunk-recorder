@@ -76,6 +76,11 @@ transmission_sink::transmission_sink(int n_channels, unsigned int sample_rate, i
   d_sample_count = 0;
   d_slot = -1;
   d_termination_flag = false;
+  d_start_time = 0;
+  d_stop_time = 0;
+  d_start_time_ms = 0;
+  d_stop_time_ms = 0;
+  d_last_write_time = std::chrono::steady_clock::now();
   state = AVAILABLE;
 }
 
