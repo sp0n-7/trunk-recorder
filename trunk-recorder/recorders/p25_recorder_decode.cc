@@ -317,6 +317,13 @@ void p25_recorder_decode::check_message_queue() {
       try {
         auto j = nlohmann::json::parse(msg_str);
         
+        // OP25 reports encrypted voice it cannot decrypt; without this the call is kept as silence.
+        if (j.contains("encrypted") && j["encrypted"].get<int>() == 1 && !d_call->get_encrypted()) {
+          d_call->set_encrypted(true);
+          BOOST_LOG_TRIVIAL(info) << log_header(d_call->get_short_name(), d_call->get_call_num(), d_call->get_talkgroup_display(), d_call->get_freq())
+                                  << "Encrypted voice detected, call will be discarded";
+        }
+
         if (j.contains("type")) {
           std::string json_msg_type = j["type"];
           
