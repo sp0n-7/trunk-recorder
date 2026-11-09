@@ -881,14 +881,20 @@ int monitor_messages(Config &config, gr::top_block_sptr &tb, std::vector<Source 
   time_t current_time = time(NULL);
   uint64_t current_time_ms = time_since_epoch_millisec();
   std::vector<TrunkMessage> trunk_messages;
-  SmartnetParser *smartnet_parser;
+  std::map<int, SmartnetParser *> smartnet_parsers;
   P25Parser *p25_parser;
   DmrParser *dmr_parser;
 
   signal(SIGINT, exit_interupt);
   signal(SIGHUP, rotate_log_signal);
 
-  smartnet_parser = new SmartnetParser(systems.front()); // this has to eventually be generic;
+  // The SmartNet parser keeps per-site state (OSW queue, talkgroups, patches), so each system needs its own.
+  for (vector<System *>::iterator sys_it = systems.begin(); sys_it != systems.end(); sys_it++) {
+    System *system = *sys_it;
+    if (system->get_system_type() == "smartnet") {
+      smartnet_parsers[system->get_sys_num()] = new SmartnetParser(system);
+    }
+  }
   p25_parser = new P25Parser();
   dmr_parser = new DmrParser();
 
@@ -942,7 +948,7 @@ int monitor_messages(Config &config, gr::top_block_sptr &tb, std::vector<Source 
           }
 
           if (system->get_system_type() == "smartnet") {
-            trunk_messages = smartnet_parser->parse_message(msg, system);
+            trunk_messages = smartnet_parsers[system->get_sys_num()]->parse_message(msg, system);
             handle_message(trunk_messages, system, config, sources, calls, tb);
             plugman_trunk_message(trunk_messages, system);
           }
