@@ -18,6 +18,7 @@ p25_recorder_decode::p25_recorder_decode(Recorder *recorder)
                       gr::io_signature::make(1, 1, sizeof(float)),
                       gr::io_signature::make(0, 0, sizeof(float))) {
   d_recorder = recorder;
+  d_reset_generation = 0;
 }
 
 p25_recorder_decode::~p25_recorder_decode() {
@@ -29,6 +30,14 @@ void p25_recorder_decode::stop() {
 }
 
 void p25_recorder_decode::start(Call *call) {
+  // check_message_queue() does nothing while d_call is NULL, so anything OP25 queued
+  // after the previous call stopped would otherwise be applied to this call. The
+  // frame assembler runs on its own thread and can still be decoding the previous
+  // call's buffered symbols, so also request a fresh reset and only honor ESS
+  // reports stamped with it.
+  rx_queue->flush();
+  d_reset_generation = op25_frame_assembler->clear();
+
   levels->set_k(call->get_system()->get_digital_levels());
 
   if(call->get_phase2_tdma()){
@@ -155,7 +164,7 @@ void p25_recorder_decode::reset() {
   reset_block(slicer);
   reset_block(levels);
   reset_block(wav_sink);*/
-  op25_frame_assembler->clear();
+  d_reset_generation = op25_frame_assembler->clear();
 }
 
 gr::op25_repeater::p25_frame_assembler::sptr p25_recorder_decode::get_transmission_sink() {
@@ -318,7 +327,9 @@ void p25_recorder_decode::check_message_queue() {
         auto j = nlohmann::json::parse(msg_str);
         
         // OP25 reports encrypted voice it cannot decrypt; without this the call is kept as silence.
-        if (j.contains("encrypted") && j["encrypted"].get<int>() == 1 && !d_call->get_encrypted()) {
+        // Reports stamped from before this call's reset describe the previous call.
+        if (j.contains("encrypted") && j.value("gen", -1L) >= (long)d_reset_generation &&
+            j["encrypted"].get<int>() == 1 && !d_call->get_encrypted()) {
           d_call->set_encrypted(true);
           BOOST_LOG_TRIVIAL(info) << log_header(d_call->get_short_name(), d_call->get_call_num(), d_call->get_talkgroup_display(), d_call->get_freq())
                                   << "Encrypted voice detected, call will be discarded";

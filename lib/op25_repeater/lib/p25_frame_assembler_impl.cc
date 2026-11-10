@@ -159,6 +159,9 @@ static const int MAX_IN = 1;	// maximum number of input streams
       // {"encrypted": 1} until its own ESS arrives.
       p1fdma.call_end();
       p2tdma.call_end();
+      // Stamp the ESS reports so the recorder can drop ones built before this reset.
+      p1fdma.set_generation(d_reset_applied);
+      p2tdma.set_generation(d_reset_applied);
     }
 
     void p25_frame_assembler_impl::set_voice_codec_callback(voice_codec_cb_t cb, void *user_data) {

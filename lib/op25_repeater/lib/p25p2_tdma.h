@@ -47,6 +47,7 @@ public:
 	int handle_packet(uint8_t dibits[], const uint64_t fs) ;
 	void set_slotid(int slotid);
 	void call_end();
+	inline void set_generation(unsigned long g) { d_generation = g; }
 	void clear();
 	void crypt_reset();
 	void crypt_key(uint16_t keyid, uint8_t algid, const std::vector<uint8_t> &key);
@@ -113,6 +114,7 @@ private:
 	uint8_t next_algid;
 	uint8_t next_mi[9] = {0};
 	bool next_ess_valid;
+	unsigned long d_generation;
 
 	p25p2_framer p2framer;
     p25_crypt_algs crypt_algs;

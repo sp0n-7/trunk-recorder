@@ -231,6 +231,7 @@ namespace gr {
             cached_id_timestamp(0),
             ess_algid(0x80),
             vf_tgid(0),
+            d_generation(0),
 			terminate_call(std::pair<bool,long>(false,0)),
             p1voice_decode((debug > 0), udp, output_queue),
             voice_codec_cb_(NULL),
@@ -936,7 +937,7 @@ namespace gr {
                                     output_queue.push_back(0);  // Silent frame
                                 }
                             }
-                            std::string encr = "{\"encrypted\": " + std::to_string(1) + ", \"algid\": " + std::to_string(ess_algid) + ", \"keyid\": " + std::to_string(ess_keyid) + "}";
+                            std::string encr = "{\"encrypted\": " + std::to_string(1) + ", \"algid\": " + std::to_string(ess_algid) + ", \"keyid\": " + std::to_string(ess_keyid) + ", \"gen\": " + std::to_string(d_generation) + "}";
                             send_msg(encr, M_P25_JSON_DATA);
                         }
                     }

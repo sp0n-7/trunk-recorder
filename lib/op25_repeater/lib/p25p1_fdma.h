@@ -73,6 +73,7 @@ namespace gr {
                 void send_msg(const std::string msg_str, long msg_type);
 
                 // internal instance variables and state
+                unsigned long d_generation;
                 int write_bufp;
                 char write_buf[512];
                 int d_debug;
@@ -128,6 +129,7 @@ namespace gr {
                 void set_nac(int nac);
                 void reset_timer();
                 void call_end();
+                inline void set_generation(unsigned long g) { d_generation = g; }
                 void crypt_reset();
                 void crypt_key(uint16_t keyid, uint8_t algid, const std::vector<uint8_t> &key);
                 void rx_sym (const uint8_t *syms, int nsyms);

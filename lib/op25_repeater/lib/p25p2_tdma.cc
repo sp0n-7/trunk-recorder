@@ -125,6 +125,7 @@ p25p2_tdma::p25p2_tdma(const op25_audio& udp, log_ts& logger, int slotid, int de
 	next_keyid(0),
 	next_algid(0x80),
 	next_ess_valid(false),
+	d_generation(0),
 	p2framer(),
     crypt_algs(logger, debug, msgq_id),
     src_id(-1),
@@ -917,7 +918,7 @@ int p25p2_tdma::handle_packet(uint8_t dibits[], const uint64_t fs)
 			if (encrypted()) {
 				crypt_algs.prepare(ess_algid, ess_keyid, PT_P25_PHASE2, ess_mi);
 			}
-			std::string s = "{\"encrypted\": " + std::to_string((encrypted()) ? 1 : 0) + ", \"algid\": " + std::to_string(ess_algid) + ", \"keyid\": " + std::to_string(ess_keyid) + "}";
+			std::string s = "{\"encrypted\": " + std::to_string((encrypted()) ? 1 : 0) + ", \"algid\": " + std::to_string(ess_algid) + ", \"keyid\": " + std::to_string(ess_keyid) + ", \"gen\": " + std::to_string(d_generation) + "}";
 			send_msg(s, M_P25_JSON_DATA);
 		}
 		return -1;
