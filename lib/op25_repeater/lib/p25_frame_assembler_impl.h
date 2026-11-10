@@ -28,6 +28,7 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <atomic>
 #include <deque>
 #include <boost/log/trivial.hpp>
 
@@ -53,6 +54,9 @@ namespace gr {
 	p25p2_tdma p2tdma;
 	bool d_do_msgq;
 	gr::msg_queue::sptr d_msg_queue;
+	// clear() bumps the request from the recorder's thread; general_work() applies it.
+	std::atomic<unsigned long> d_reset_requested;
+	unsigned long d_reset_applied;
 
   int d_input_rate;
   int d_silence_frames;
@@ -63,6 +67,7 @@ namespace gr {
   // internal functions
 
     void send_grp_src_id();
+    void apply_reset();
     void set_xormask(const char*p) ;
     void set_nac(int nac) ;
     void set_slotid(int slotid) ;
@@ -89,7 +94,7 @@ public:
 		       gr_vector_void_star &output_items);
 
       void clear_silence_frame_count();
-      void clear();
+      unsigned long clear();
       void set_voice_codec_callback(voice_codec_cb_t cb, void *user_data);
       log_ts logts;
     };

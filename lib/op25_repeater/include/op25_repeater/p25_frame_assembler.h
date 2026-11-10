@@ -62,7 +62,8 @@ namespace gr {
       virtual void crypt_reset(void) {}
       virtual void crypt_key(uint16_t keyid, uint8_t algid, const std::vector<uint8_t> &key) {}
       virtual void set_phase2_tdma(bool p) {}
-      virtual void clear() {};
+      // Asks the work thread to reset between calls; returns the generation of that reset.
+      virtual unsigned long clear() { return 0; };
       virtual  void clear_silence_frame_count() {};
       typedef void (*voice_codec_cb_t)(int codec_type, long tgid, uint32_t src_id, const uint32_t *params, int param_count, int errs, void *user_data);
       virtual void set_voice_codec_callback(voice_codec_cb_t cb, void *user_data) {};

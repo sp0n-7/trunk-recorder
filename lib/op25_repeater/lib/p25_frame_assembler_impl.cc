@@ -107,6 +107,8 @@ static const int MAX_IN = 1;	// maximum number of input streams
 	p2tdma(op25audio, logts,  0, debug, do_msgq, queue, output_queue, do_audio_output, soft_vocoder),
 	d_do_msgq(do_msgq),
 	d_msg_queue(queue),
+	d_reset_requested(0),
+	d_reset_applied(0),
 	output_queue(),
 	op25audio(udp_host, port, debug),
   d_input_rate(4800),
@@ -130,7 +132,13 @@ static const int MAX_IN = 1;	// maximum number of input streams
     }
 
 
-    void p25_frame_assembler_impl::clear() {
+    unsigned long p25_frame_assembler_impl::clear() {
+      // The recorder calls this from its own thread while general_work() may be
+      // mid-frame, so only record the request here and reset on the work thread.
+      return ++d_reset_requested;
+    }
+
+    void p25_frame_assembler_impl::apply_reset() {
       // clear out the SRC and GRP IDs
       long clear;
       clear = p1fdma.get_curr_src_id();
@@ -145,6 +153,12 @@ static const int MAX_IN = 1;	// maximum number of input streams
       // to its own state; safe to call between calls.)
       p1fdma.clear();
       p2tdma.clear();
+      // End the call for the ESS state as well. encrypted() is ess_algid != 0x80
+      // and only a terminator or call_end() resets it, so after an encrypted
+      // call the next one would start encrypted: silent frames plus
+      // {"encrypted": 1} until its own ESS arrives.
+      p1fdma.call_end();
+      p2tdma.call_end();
     }
 
     void p25_frame_assembler_impl::set_voice_codec_callback(voice_codec_cb_t cb, void *user_data) {
@@ -199,6 +213,12 @@ p25_frame_assembler_impl::general_work (int noutput_items,
 
   const uint8_t *in = (const uint8_t *) input_items[0];
   std::pair<bool,long> terminate_call = std::make_pair(false, 0);
+
+  unsigned long reset_requested = d_reset_requested.load();
+  if (reset_requested != d_reset_applied) {
+    d_reset_applied = reset_requested;
+    apply_reset();
+  }
 
   p1fdma.rx_sym(in, ninput_items[0]);
   if(d_do_phase2_tdma) {

@@ -112,6 +112,7 @@ private:
 	uint16_t next_keyid;
 	uint8_t next_algid;
 	uint8_t next_mi[9] = {0};
+	bool next_ess_valid;
 
 	p25p2_framer p2framer;
     p25_crypt_algs crypt_algs;
@@ -129,7 +130,12 @@ private:
     void convert_abbrev_msg(const uint8_t byte_buf[], const uint16_t nac, const uint8_t mfid = 0x00);
 	void handle_4V2V_ess(const uint8_t dibits[]);
 	inline bool encrypted() { return (ess_algid != 0x80); }
-    inline void reset_ess() { ess_algid = 0x80; memset(ess_mi, 0, sizeof(ess_mi)); }
+    // Also drops the pending ESS so a failed decode cannot promote a previous transmission's algid.
+    inline void reset_ess() {
+        ess_algid = 0x80; memset(ess_mi, 0, sizeof(ess_mi));
+        next_algid = 0x80; next_keyid = 0; memset(next_mi, 0, sizeof(next_mi));
+        next_ess_valid = false;
+    }
 
 	void send_msg(const std::string msg_str, long msg_type);
 
