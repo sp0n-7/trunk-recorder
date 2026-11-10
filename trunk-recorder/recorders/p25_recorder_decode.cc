@@ -19,6 +19,8 @@ p25_recorder_decode::p25_recorder_decode(Recorder *recorder)
                       gr::io_signature::make(0, 0, sizeof(float))) {
   d_recorder = recorder;
   d_reset_generation = 0;
+  d_clear_voice_seen = false;
+  d_encrypted_voice_seen = false;
 }
 
 p25_recorder_decode::~p25_recorder_decode() {
@@ -37,6 +39,8 @@ void p25_recorder_decode::start(Call *call) {
   // reports stamped with it.
   rx_queue->flush();
   d_reset_generation = op25_frame_assembler->clear();
+  d_clear_voice_seen = false;
+  d_encrypted_voice_seen = false;
 
   levels->set_k(call->get_system()->get_digital_levels());
 
@@ -326,13 +330,23 @@ void p25_recorder_decode::check_message_queue() {
       try {
         auto j = nlohmann::json::parse(msg_str);
         
-        // OP25 reports encrypted voice it cannot decrypt; without this the call is kept as silence.
-        // Reports stamped from before this call's reset describe the previous call.
-        if (j.contains("encrypted") && j.value("gen", -1L) >= (long)d_reset_generation &&
-            j["encrypted"].get<int>() == 1 && !d_call->get_encrypted()) {
-          d_call->set_encrypted(true);
-          BOOST_LOG_TRIVIAL(info) << log_header(d_call->get_short_name(), d_call->get_call_num(), d_call->get_talkgroup_display(), d_call->get_freq())
-                                  << "Encrypted voice detected, call will be discarded";
+        // OP25 reports the ESS of the voice it decodes: Phase 1 once per LDU, Phase 2 on every
+        // promotion. Encrypted voice comes through as silent frames, so a call is only discarded
+        // when it is encrypted before any clear audio was decoded for it. Reports stamped from
+        // before this call's reset describe the previous call.
+        if (j.contains("encrypted") && j.value("gen", -1L) >= (long)d_reset_generation) {
+          if (j["encrypted"].get<int>() == 0) {
+            d_clear_voice_seen = true;
+          } else if (!d_encrypted_voice_seen) {
+            d_encrypted_voice_seen = true;
+            std::string loghdr = log_header(d_call->get_short_name(), d_call->get_call_num(), d_call->get_talkgroup_display(), d_call->get_freq());
+            if (d_clear_voice_seen) {
+              BOOST_LOG_TRIVIAL(info) << loghdr << "Encrypted voice after clear audio, keeping call";
+            } else if (!d_call->get_encrypted()) {
+              d_call->set_encrypted(true);
+              BOOST_LOG_TRIVIAL(info) << loghdr << "Encrypted voice detected, call will be discarded";
+            }
+          }
         }
 
         if (j.contains("type")) {

@@ -231,6 +231,7 @@ namespace gr {
             cached_id_timestamp(0),
             ess_algid(0x80),
             vf_tgid(0),
+            ess_valid(false),
             d_generation(0),
 			terminate_call(std::pair<bool,long>(false,0)),
             p1voice_decode((debug > 0), udp, output_queue),
@@ -320,6 +321,7 @@ namespace gr {
             ec = rs16.decode(HB); // Reed Solomon (36,20,17) error correction
 
             if ((ec >= 0) && (ec <= 8)) { // upper limit of 8 corrections
+                ess_valid = true;
                 j = 27;												// 72 bit MI
                 for (i = 0; i < 9;) {
                     ess_mi[i++] = (uint8_t)  (HB[j  ]         << 2) + (HB[j+1] >> 4);
@@ -418,6 +420,7 @@ namespace gr {
                 ess_algid = next_algid;
                 ess_keyid = next_keyid;
                 memcpy(ess_mi, next_mi, sizeof(next_mi));
+                ess_valid = true;
             }
         }
 
@@ -948,6 +951,14 @@ namespace gr {
                             output_queue.push_back(s[j]);
                         }
                     }
+                }
+
+                // Phase 2 reports the ESS on every promotion; report clear voice once per LDU so the
+                // recorder can tell clear audio from the silent frames pushed for encrypted voice.
+                // Only once a real ESS has been decoded: before that, 0x80 is just the reset value.
+                if (d_do_audio_output && ess_valid && !encrypted()) {
+                    std::string clr = "{\"encrypted\": 0, \"algid\": " + std::to_string(ess_algid) + ", \"keyid\": " + std::to_string(ess_keyid) + ", \"gen\": " + std::to_string(d_generation) + "}";
+                    send_msg(clr, M_P25_JSON_DATA);
                 }
             }
         }

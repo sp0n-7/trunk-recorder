@@ -69,7 +69,7 @@ namespace gr {
                 void process_frame();
                 void check_timeout();
                 inline bool encrypted() { return (ess_algid != 0x80); }
-                inline void reset_ess() { ess_algid = 0x80; memset(ess_mi, 0, sizeof(ess_mi)); }
+                inline void reset_ess() { ess_algid = 0x80; memset(ess_mi, 0, sizeof(ess_mi)); ess_valid = false; }
                 void send_msg(const std::string msg_str, long msg_type);
 
                 // internal instance variables and state
@@ -115,6 +115,7 @@ namespace gr {
                 uint16_t  ess_keyid;
                 uint8_t ess_algid;
                 uint8_t  ess_mi[9] = {0};
+                bool ess_valid; // a real ESS (HDU or LDU2) has been decoded since the last reset
                 uint16_t vf_tgid;
 
                 imbe_vocoder vocoder; // for original full rate vocoder
